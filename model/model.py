@@ -64,40 +64,39 @@ def run_model(tr):
     kx = []
     lts = []
 
-    for i in range(1):
-    
-        K = Kesten_process(tr.Nprocess, tr.X_0, b_n, tr.up_cap, tr.Npool)
+    K = Kesten_process(tr.Nprocess, tr.X_0, b_n, tr.up_cap, tr.Npool)
 
-        pid_pool = np.array(range(tr.Npool))
-        counter,ts = np.zeros(tr.Nprocess), np.zeros(tr.Nprocess)
+    pid_pool = np.array(range(tr.Npool))
+    counter,ts = np.zeros(tr.Nprocess), np.zeros(tr.Nprocess)
 
-        for j in range(0,tr.Nsteps):
+    for j in range(0,tr.Nsteps):
 
 
-            ids = np.logical_and(K.X<=tr.c,
-                                 np.random.uniform(size=tr.Nprocess)<tr.p_prune)
+        ids = np.logical_and(K.X<=tr.c,
+                             np.random.uniform(size=tr.Nprocess)<tr.p_prune)
 
 
-            for c,t,pid in zip(counter[ids],ts[ids], K.pid[ids]):
+        for c,t,pid in zip(counter[ids],ts[ids],K.pid[ids]):
 
-                lts.append([i, c, j, t, 1,-10, pid])
+            lts.append([i, c, j, t, 1,-10, pid])
 
-            counter[ids] += 1
-            K.X[ids] = tr.X_0
-            ts[ids] = j
+        counter[ids] += 1
+        K.X[ids] = tr.X_0
+        ts[ids] = j
 
-            K.pid[ids] = -10
-            K.pid[ids] = np.random.choice(np.setdiff1d(pid_pool, K.pid),
-                                          replace=False,
-                                          size=np.sum(ids))
+        K.pid[ids] = -10
+        K.pid[ids] = np.random.choice(np.setdiff1d(pid_pool, K.pid),
+                                      replace=False,
+                                      size=np.sum(ids))
 
-            K.step()
+        K.step()
 
-        # -1 for end of simulation "synapse didn't die"
-        for c,t,kx_v in zip(counter, ts, K.X):
-            lts.append([i,c,j,t,-1,kx_v])
-            kx.append([kx_v,tr.Nsteps-t])
+    # -1 for end of simulation "synapse didn't die"
+    for c,t,kx_v,pid in zip(counter, ts, K.X, K.pid):
+        lts.append([i,c,j,t,-1,kx_v,pid])
+        kx.append([kx_v,tr.Nsteps-t])
 
+        
     raw_dir = './data/%.4d' %(tr.v_idx)
     
     if not os.path.exists(raw_dir):

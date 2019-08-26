@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#rm -rf code/analysis
-#cp -r ~/lab/netw_mods/z2/analysis-dev/ code/analysis/
+rm -rf code/analysis
+cp -r ~/lab/stoch-mod/analysis-dev/ code/analysis/
 
-#python -m code.analysis.overview
+python -m code.analysis.kx_trace

@@ -74,23 +74,24 @@ def run_model(tr):
             lts.append([i,c,j,t,-1,kx_v])
             kx.append([kx_v,tr.Nsteps-t])
 
-    raw_dir = './data/%.4d/'%(tr.v_idx)
+    raw_dir = './data/%.4d' %(tr.v_idx)
     
     if not os.path.exists(raw_dir):
         os.makedirs(raw_dir)
 
-    with open(raw_dir+'namespace.p','wb') as pfile:
+    with open(raw_dir+'/namespace.p','wb') as pfile:
         pickle.dump(namespace,pfile)   
 
-    with open(raw_dir+'kx.p','wb') as pfile:
+    with open(raw_dir+'/kx.p','wb') as pfile:
         pickle.dump(kx,pfile)   
-    with open(raw_dir+'lts.p','wb') as pfile:
-        pickle.dump(lts,pfile)   
+    with open(raw_dir+'/lts.p','wb') as pfile:
+        pickle.dump(lts,pfile)
+
+
+    from code.analysis.kx_trace import kx_trace_figure
+    kx_trace_figure(raw_dir)
         
 
-    # tr.f_add_result('kx', np.array(kx))
-    # tr.f_add_result('lts', np.array(lts))
-
-
+    
 
     

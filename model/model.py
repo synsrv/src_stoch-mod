@@ -90,7 +90,10 @@ def run_model(tr):
 
     from code.analysis.kx_trace import kx_trace_figure
     kx_trace_figure(raw_dir)
-        
+    
+    from code.analysis.synsrv_trace import synsrv_trace_figure
+    synsrv_trace_figure(raw_dir)
+
 
     
 

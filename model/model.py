@@ -13,18 +13,22 @@ def add_params(tr):
     tr.f_add_parameter('prm.X_0', prm.X_0)
     tr.f_add_parameter('prm.up_cap', prm.up_cap)
     tr.f_add_parameter('prm.Nprocess', prm.Nprocess)
+    tr.f_add_parameter('prm.Npool', prm.Npool)
     tr.f_add_parameter('prm.Nsteps', prm.Nsteps)
     tr.f_add_parameter('prm.p_prune', prm.p_prune)
     tr.f_add_parameter('prm.c', prm.c)
+
     
     
 class Kesten_process(object):
 
-    def __init__(self, N, X_0, b, up_cap):
+    def __init__(self, N, X_0, b, up_cap, Npool):
         self.N = N
         self.X = np.ones(N)*X_0
         self.b = b
         self.up_cap = up_cap
+        self.pid = np.random.choice(range(Npool), replace=False,
+                                    size=N)
 
     def step(self):
         self.X += self.b.rvs(size=self.N)
@@ -34,6 +38,19 @@ class Kesten_process(object):
 
         
 def run_model(tr):
+    """generates
+
+    lts data structure
+      [0] : 
+      [1] : counts how often synapse was renewed
+      [2] : step at which synapse was eliminated
+      [3] : step at which was inserted
+      [4] : | =  1   if eliminated during sim time
+            | = -1   else
+      [5] : | =-10   if eliminated during sim time
+            | = x    synapse weight x if survived
+      [6] : id for the process chosen from Npool
+    """
 
     np.random.seed(int(tr.v_idx))
     
@@ -49,7 +66,9 @@ def run_model(tr):
 
     for i in range(1):
     
-        K = Kesten_process(tr.Nprocess, tr.X_0, b_n, tr.up_cap)
+        K = Kesten_process(tr.Nprocess, tr.X_0, b_n, tr.up_cap, tr.Npool)
+
+        pid_pool = np.array(range(tr.Npool))
         counter,ts = np.zeros(tr.Nprocess), np.zeros(tr.Nprocess)
 
         for j in range(0,tr.Nsteps):
@@ -59,13 +78,18 @@ def run_model(tr):
                                  np.random.uniform(size=tr.Nprocess)<tr.p_prune)
 
 
-            for c,t in zip(counter[ids],ts[ids]):
+            for c,t,pid in zip(counter[ids],ts[ids], K.pid[ids]):
 
-                lts.append([i, c, j, t, 1,-10])
+                lts.append([i, c, j, t, 1,-10, pid])
 
             counter[ids] += 1
             K.X[ids] = tr.X_0
             ts[ids] = j
+
+            K.pid[ids] = -10
+            K.pid[ids] = np.random.choice(np.setdiff1d(pid_pool, K.pid),
+                                          replace=False,
+                                          size=np.sum(ids))
 
             K.step()
 

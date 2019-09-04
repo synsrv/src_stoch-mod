@@ -46,7 +46,7 @@ source "./code/"$TESTDIR_FULL"simulation.config"
 
 # 4 replace explored_params
 
-cp "./code/"$TESTDIR_FULL"explored_params.py" ./code/net/
+cp "./code/"$TESTDIR_FULL"explored_params.py" ./code/model/
 
 
 # 5 start simulation through run_local with settings from 3)

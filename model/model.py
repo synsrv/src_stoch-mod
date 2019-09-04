@@ -17,6 +17,7 @@ def add_params(tr):
     tr.f_add_parameter('prm.Nsteps', prm.Nsteps)
     tr.f_add_parameter('prm.p_prune', prm.p_prune)
     tr.f_add_parameter('prm.c', prm.c)
+    tr.f_add_parameter('prm.pid_mode', prm.pid_mode)
 
     
     
@@ -68,7 +69,7 @@ def run_model(tr):
 
     K = Kesten_process(tr.Nprocess, tr.X_0, b_n, tr.up_cap, tr.Npool)
 
-    pid_pool = np.array(range(tr.Npool))
+    pid_pool, pid_c = np.array(range(tr.Npool)),  tr.Npool
     counter,ts = np.zeros(tr.Nprocess), np.zeros(tr.Nprocess)
 
     for j in range(0,tr.Nsteps):
@@ -86,11 +87,17 @@ def run_model(tr):
         K.X[ids] = tr.X_0
         ts[ids] = j
 
-        K.pid[ids] = -10
-        K.pid[ids] = np.random.choice(np.setdiff1d(pid_pool, K.pid),
-                                      replace=False,
-                                      size=np.sum(ids))
+        if tr.pid_mode == 'pool':
+            K.pid[ids] = -10
+            K.pid[ids] = np.random.choice(np.setdiff1d(pid_pool, K.pid),
+                                          replace=False,
+                                          size=np.sum(ids))
 
+        elif tr.pid_mode == 'unique':
+            K.pid[ids] = np.arange(pid_c+1, pid_c+np.sum(ids)+1, dtype='int')
+            pid_c += np.sum(ids)+5
+                       
+                       
         K.step()
 
     # -1 for end of simulation "synapse didn't die"
@@ -116,11 +123,11 @@ def run_model(tr):
 
     from code.analysis.post_process.equal_dt import (
         subsamp_equal_dt )
-    subsamp_equal_dt(raw_dir)
+    subsamp_equal_dt(namespace, lts, raw_dir)
 
     from code.analysis.post_process.fixed_start_dt import (
         subsamp_fixed_start_dt )
-    subsamp_fixed_start_dt(raw_dir)
+    subsamp_fixed_start_dt(namespace, lts, raw_dir)
 
 
     

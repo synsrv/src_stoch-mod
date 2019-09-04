@@ -9,3 +9,4 @@ Npool = 100
 Nsteps = 1000
 c = 0.005
 
+pid_mode = 'pool'

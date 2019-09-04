@@ -30,10 +30,12 @@ class Kesten_process(object):
         self.pid = np.random.choice(range(Npool), replace=False,
                                     size=N)
 
+        print("Up-cap disabled!")
+
     def step(self):
         self.X += self.b.rvs(size=self.N)
         self.X[self.X<0.] = 0.
-        self.X[self.X>self.up_cap] = self.up_cap
+        # self.X[self.X>self.up_cap] = self.up_cap
 
 
         
@@ -41,7 +43,7 @@ def run_model(tr):
     """generates
 
     lts data structure
-      [0] : 
+      [0] : empty for now
       [1] : counts how often synapse was renewed
       [2] : step at which synapse was eliminated
       [3] : step at which was inserted
@@ -78,7 +80,7 @@ def run_model(tr):
 
         for c,t,pid in zip(counter[ids],ts[ids],K.pid[ids]):
 
-            lts.append([i, c, j, t, 1,-10, pid])
+            lts.append([1, c, j, t, 1,-10, pid])
 
         counter[ids] += 1
         K.X[ids] = tr.X_0
@@ -93,7 +95,7 @@ def run_model(tr):
 
     # -1 for end of simulation "synapse didn't die"
     for c,t,kx_v,pid in zip(counter, ts, K.X, K.pid):
-        lts.append([i,c,j,t,-1,kx_v,pid])
+        lts.append([1,c,j,t,-1,kx_v,pid])
         kx.append([kx_v,tr.Nsteps-t])
 
         
@@ -110,13 +112,18 @@ def run_model(tr):
     with open(raw_dir+'/lts.p','wb') as pfile:
         pickle.dump(lts,pfile)
 
+        
 
-    from code.analysis.kx_trace import kx_trace_figure
-    kx_trace_figure(raw_dir)
+    from code.analysis.post_process.equal_dt import (
+        subsamp_equal_dt )
+    subsamp_equal_dt(raw_dir)
+
+    from code.analysis.post_process.fixed_start_dt import (
+        subsamp_fixed_start_dt )
+    subsamp_fixed_start_dt(raw_dir)
+
+
     
-    from code.analysis.synsrv_trace import synsrv_trace_figure
-    synsrv_trace_figure(raw_dir)
-
 
     
 

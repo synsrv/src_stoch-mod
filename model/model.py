@@ -8,8 +8,13 @@ import scipy.stats as scts
 
 
 def add_params(tr):
+    tr.f_add_parameter('prm.process_type', prm.process_type)
+
+    tr.f_add_parameter('prm.an_mu', prm.an_mu)
+    tr.f_add_parameter('prm.an_sig', prm.an_sig)
     tr.f_add_parameter('prm.bn_mu', prm.bn_mu)
     tr.f_add_parameter('prm.bn_sig', prm.bn_sig)
+
     tr.f_add_parameter('prm.X_0', prm.X_0)
     tr.f_add_parameter('prm.up_cap', prm.up_cap)
     tr.f_add_parameter('prm.Nprocess', prm.Nprocess)
@@ -18,6 +23,7 @@ def add_params(tr):
     tr.f_add_parameter('prm.p_prune', prm.p_prune)
     tr.f_add_parameter('prm.c', prm.c)
     tr.f_add_parameter('prm.pid_mode', prm.pid_mode)
+
 
     
     
@@ -38,6 +44,30 @@ class Browian_motion(object):
         self.X[self.X<0.] = 0.
         # self.X[self.X>self.up_cap] = self.up_cap
 
+
+
+class Kesten_process(object):
+
+    def __init__(self, N, X_0, a, b, up_cap, Npool):
+        self.N = N
+        self.X = np.ones(N)*X_0
+        self.a, self.b = a, b
+        self.up_cap = up_cap
+        self.pid = np.random.choice(range(Npool), replace=False,
+                                    size=N)
+
+        print("Up-cap disabled!")
+
+    def step(self):
+
+        asv = self.a.rvs(size=self.N)
+        while len(asv[asv<=0])>0:
+            asv[asv<=0] = self.a.rvs(size=len(asv[asv<=0]))
+
+        self.X = asv*self.X + self.b.rvs(size=self.N)
+        self.X[self.X<0.] = 0.
+        # self.X[self.X>self.up_cap] = self.up_cap
+        
 
         
 def run_model(tr):
@@ -62,12 +92,21 @@ def run_model(tr):
     namespace = tr.prm.f_to_dict(short_names=True, fast_access=True)
     namespace['idx'] = tr.v_idx
 
+    kx, lts = [], []
+
+    a_n = scts.norm(loc=tr.an_mu, scale=tr.an_sig)
     b_n = scts.norm(loc=tr.bn_mu, scale=tr.bn_sig)
 
-    kx = []
-    lts = []
+    if tr.process_type=='Brownian':
 
-    K = Browian_motion(tr.Nprocess, tr.X_0, b_n, tr.up_cap, tr.Npool)
+        K = Browian_motion(tr.Nprocess, tr.X_0, b_n,
+                           tr.up_cap, tr.Npool)
+
+    elif tr.process_type=='Kesten':
+
+        K = Kesten_process(tr.Nprocess, tr.X_0, a_n, b_n,
+                           tr.up_cap, tr.Npool)
+        
 
     pid_pool, pid_c = np.array(range(tr.Npool)),  tr.Npool
     counter,ts = np.zeros(tr.Nprocess), np.zeros(tr.Nprocess)
@@ -121,13 +160,13 @@ def run_model(tr):
 
         
 
-    from code.analysis.post_process.equal_dt import (
-        subsamp_equal_dt )
-    subsamp_equal_dt(namespace, lts, raw_dir)
+    # from code.analysis.post_process.equal_dt import (
+    #     subsamp_equal_dt )
+    # subsamp_equal_dt(namespace, lts, raw_dir)
 
-    from code.analysis.post_process.fixed_start_dt import (
-        subsamp_fixed_start_dt )
-    subsamp_fixed_start_dt(namespace, lts, raw_dir)
+    # from code.analysis.post_process.fixed_start_dt import (
+    #     subsamp_fixed_start_dt )
+    # subsamp_fixed_start_dt(namespace, lts, raw_dir)
 
 
     

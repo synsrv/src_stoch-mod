@@ -1,4 +1,8 @@
 
+process_type = 'Brownian'
+
+an_mu = 1.
+an_sig = 0.
 bn_mu = 0.
 bn_sig = 0.05
 X_0 = 0.

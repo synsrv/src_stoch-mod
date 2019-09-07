@@ -21,7 +21,7 @@ def add_params(tr):
 
     
     
-class Kesten_process(object):
+class Browian_motion(object):
 
     def __init__(self, N, X_0, b, up_cap, Npool):
         self.N = N
@@ -67,7 +67,7 @@ def run_model(tr):
     kx = []
     lts = []
 
-    K = Kesten_process(tr.Nprocess, tr.X_0, b_n, tr.up_cap, tr.Npool)
+    K = Browian_motion(tr.Nprocess, tr.X_0, b_n, tr.up_cap, tr.Npool)
 
     pid_pool, pid_c = np.array(range(tr.Npool)),  tr.Npool
     counter,ts = np.zeros(tr.Nprocess), np.zeros(tr.Nprocess)

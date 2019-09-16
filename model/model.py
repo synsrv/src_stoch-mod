@@ -160,13 +160,13 @@ def run_model(tr):
 
         
 
-    # from code.analysis.post_process.equal_dt import (
-    #     subsamp_equal_dt )
-    # subsamp_equal_dt(namespace, lts, raw_dir)
+    from code.analysis.post_process.equal_dt import (
+        subsamp_equal_dt )
+    subsamp_equal_dt(namespace, lts, raw_dir)
 
-    # from code.analysis.post_process.fixed_start_dt import (
-    #     subsamp_fixed_start_dt )
-    # subsamp_fixed_start_dt(namespace, lts, raw_dir)
+    from code.analysis.post_process.fixed_start_dt import (
+        subsamp_fixed_start_dt )
+    subsamp_fixed_start_dt(namespace, lts, raw_dir)
 
 
     

@@ -2,6 +2,7 @@
 import os, pickle
 
 from . import standard_parameters as prm
+from .processes import *
 
 import numpy as np
 import scipy.stats as scts
@@ -15,6 +16,15 @@ def add_params(tr):
     tr.f_add_parameter('prm.bn_mu', prm.bn_mu)
     tr.f_add_parameter('prm.bn_sig', prm.bn_sig)
 
+    tr.f_add_parameter('prm.mu1', prm.mu1)
+    tr.f_add_parameter('prm.theta1', prm.theta1)
+    tr.f_add_parameter('prm.sigma1', prm.sigma1)
+    tr.f_add_parameter('prm.mu2', prm.mu2)
+    tr.f_add_parameter('prm.theta2', prm.theta2)
+    tr.f_add_parameter('prm.sigma2', prm.sigma2)
+    tr.f_add_parameter('prm.mu_global', prm.mu_global)
+
+
     tr.f_add_parameter('prm.X_0', prm.X_0)
     tr.f_add_parameter('prm.up_cap', prm.up_cap)
     tr.f_add_parameter('prm.Nprocess', prm.Nprocess)
@@ -24,50 +34,6 @@ def add_params(tr):
     tr.f_add_parameter('prm.c', prm.c)
     tr.f_add_parameter('prm.pid_mode', prm.pid_mode)
 
-
-    
-    
-class Browian_motion(object):
-
-    def __init__(self, N, X_0, b, up_cap, Npool):
-        self.N = N
-        self.X = np.ones(N)*X_0
-        self.b = b
-        self.up_cap = up_cap
-        self.pid = np.random.choice(range(Npool), replace=False,
-                                    size=N)
-
-        print("Up-cap disabled!")
-
-    def step(self):
-        self.X += self.b.rvs(size=self.N)
-        self.X[self.X<0.] = 0.
-        # self.X[self.X>self.up_cap] = self.up_cap
-
-
-
-class Kesten_process(object):
-
-    def __init__(self, N, X_0, a, b, up_cap, Npool):
-        self.N = N
-        self.X = np.ones(N)*X_0
-        self.a, self.b = a, b
-        self.up_cap = up_cap
-        self.pid = np.random.choice(range(Npool), replace=False,
-                                    size=N)
-
-        print("Up-cap disabled!")
-
-    def step(self):
-
-        asv = self.a.rvs(size=self.N)
-        while len(asv[asv<=0])>0:
-            asv[asv<=0] = self.a.rvs(size=len(asv[asv<=0]))
-
-        self.X = asv*self.X + self.b.rvs(size=self.N)
-        self.X[self.X<0.] = 0.
-        # self.X[self.X>self.up_cap] = self.up_cap
-        
 
         
 def run_model(tr):
@@ -106,6 +72,12 @@ def run_model(tr):
 
         K = Kesten_process(tr.Nprocess, tr.X_0, a_n, b_n,
                            tr.up_cap, tr.Npool)
+
+    elif tr.process_type=='LWOU':
+
+        K = LWOU_process(tr.Nprocess, tr.X_0, tr.mu1, tr.theta1,
+                         tr.sigma1, tr.mu2, tr.theta2, tr.sigma2,
+                         tr.mu_global, tr.up_cap, tr.Npool)
         
 
     pid_pool, pid_c = np.array(range(tr.Npool)),  tr.Npool

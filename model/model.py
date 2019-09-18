@@ -23,7 +23,7 @@ def add_params(tr):
     tr.f_add_parameter('prm.theta2', prm.theta2)
     tr.f_add_parameter('prm.sigma2', prm.sigma2)
     tr.f_add_parameter('prm.mu_global', prm.mu_global)
-
+    tr.f_add_parameter('prm.dt', prm.dt)
 
     tr.f_add_parameter('prm.X_0', prm.X_0)
     tr.f_add_parameter('prm.up_cap', prm.up_cap)
@@ -34,6 +34,7 @@ def add_params(tr):
     tr.f_add_parameter('prm.c', prm.c)
     tr.f_add_parameter('prm.pid_mode', prm.pid_mode)
 
+    tr.f_add_parameter('prm.n_trace_rec', prm.n_trace_rec)
 
         
 def run_model(tr):
@@ -58,7 +59,7 @@ def run_model(tr):
     namespace = tr.prm.f_to_dict(short_names=True, fast_access=True)
     namespace['idx'] = tr.v_idx
 
-    kx, lts = [], []
+    kx, lts, xt = [], [], []
 
     a_n = scts.norm(loc=tr.an_mu, scale=tr.an_sig)
     b_n = scts.norm(loc=tr.bn_mu, scale=tr.bn_sig)
@@ -78,7 +79,13 @@ def run_model(tr):
         K = LWOU_process(tr.Nprocess, tr.X_0, tr.mu1, tr.theta1,
                          tr.sigma1, tr.mu2, tr.theta2, tr.sigma2,
                          tr.mu_global, tr.up_cap, tr.Npool)
-        
+
+    elif tr.process_type=='LWOU_euler':
+
+        K = LWOU_process_euler(tr.Nprocess, tr.X_0, tr.mu1, tr.theta1,
+                               tr.sigma1, tr.mu2, tr.theta2, tr.sigma2,
+                               tr.mu_global, tr.up_cap, tr.Npool, tr.dt)
+
 
     pid_pool, pid_c = np.array(range(tr.Npool)),  tr.Npool
     counter,ts = np.zeros(tr.Nprocess), np.zeros(tr.Nprocess)
@@ -96,6 +103,8 @@ def run_model(tr):
 
         counter[ids] += 1
         K.X[ids] = tr.X_0
+        if tr.process_type=='LWOU_euler':
+            K.X1[ids], K.X2[ids] = 0.,0.
         ts[ids] = j
 
         if tr.pid_mode == 'pool':
@@ -107,8 +116,9 @@ def run_model(tr):
         elif tr.pid_mode == 'unique':
             K.pid[ids] = np.arange(pid_c+1, pid_c+np.sum(ids)+1, dtype='int')
             pid_c += np.sum(ids)+5
-                       
-                       
+
+        xt.append(list(K.X[:tr.n_trace_rec]))
+
         K.step()
 
     # -1 for end of simulation "synapse didn't die"
@@ -129,6 +139,8 @@ def run_model(tr):
         pickle.dump(kx,pfile)   
     with open(raw_dir+'/lts.p','wb') as pfile:
         pickle.dump(lts,pfile)
+    with open(raw_dir+'/xt.p','wb') as pfile:
+        pickle.dump(np.array(xt),pfile)
 
         
 
@@ -136,9 +148,10 @@ def run_model(tr):
         subsamp_equal_dt )
     subsamp_equal_dt(namespace, lts, raw_dir)
 
-    from code.analysis.post_process.fixed_start_dt import (
-        subsamp_fixed_start_dt )
-    subsamp_fixed_start_dt(namespace, lts, raw_dir)
+    # from code.analysis.post_process.fixed_start_dt import (
+    #     subsamp_fixed_start_dt )
+    # subsamp_fixed_start_dt(namespace, lts, raw_dir)
+
 
 
     

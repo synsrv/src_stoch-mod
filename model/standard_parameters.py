@@ -21,5 +21,8 @@ Nprocess = 100
 Npool = 100
 Nsteps = 1000
 c = 0.005
+dt = 1/60.*1/24.
 
 pid_mode = 'pool'
+
+n_trace_rec = 1

@@ -9,15 +9,16 @@ class Browian_motion(object):
         self.X = np.ones(N)*X_0
         self.b = b
         self.up_cap = up_cap
-        self.pid = np.random.choice(range(Npool), replace=False,
+        self.pid = np.random.choice(range(Npool),
+                                    replace=False,
                                     size=N)
-
-        print("Up-cap disabled!")
 
     def step(self):
         self.X += self.b.rvs(size=self.N)
         self.X[self.X<0.] = 0.
-        # self.X[self.X>self.up_cap] = self.up_cap
+
+        if self.up_cap > 0:
+            self.X[self.X>self.up_cap] = self.up_cap
 
 
 
@@ -31,7 +32,6 @@ class Kesten_process(object):
         self.pid = np.random.choice(range(Npool), replace=False,
                                     size=N)
 
-        print("Up-cap disabled!")
 
     def step(self):
 
@@ -41,7 +41,9 @@ class Kesten_process(object):
 
         self.X = asv*self.X + self.b.rvs(size=self.N)
         self.X[self.X<0.] = 0.
-        # self.X[self.X>self.up_cap] = self.up_cap
+
+        if self.up_cap > 0:
+            self.X[self.X>self.up_cap] = self.up_cap
 
 
 
@@ -67,7 +69,6 @@ class LWOU_process(object):
 
         self.mu_global = mu_global
 
-        print("Up-cap disabled!")
         self.up_cap = up_cap
 
         self.setup_1()
@@ -97,8 +98,8 @@ class LWOU_process(object):
 
         self.X[self.X<0.] = 0.
 
-        # if self.up_cap > 0:
-        #     self.X[self.X>self.up_cap] = self.up_cap
+        if self.up_cap > 0:
+            self.X[self.X>self.up_cap] = self.up_cap
 
 
         
@@ -129,7 +130,6 @@ class LWOU_process_euler(object):
         zeta2_sd = np.sqrt(2*self.theta2*self.sigma2sq)
         self.zeta2 = scipy.stats.norm(loc=0, scale=zeta2_sd)
 
-        print("Up-cap disabled!")
         self.up_cap = up_cap
 
         
@@ -150,8 +150,8 @@ class LWOU_process_euler(object):
         self.X = 10.**(self.X1 + self.X2 + self.mu_global)
         self.X[self.X<0.] = 0.
 
-        # if self.up_cap > 0:
-        #     self.X[self.X>self.up_cap] = self.up_cap
+        if self.up_cap > 0:
+            self.X[self.X>self.up_cap] = self.up_cap
 
 
         

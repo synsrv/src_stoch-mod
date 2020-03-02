@@ -111,8 +111,8 @@ class LWOU_process_euler(object):
         self.pid = np.random.choice(range(Npool), replace=False,
                                     size=N)
 
-        self.X1 = np.ones(N)*0.
-        self.X2 = np.ones(N)*0.
+        self.X1 = np.ones(N)*X1_init
+        self.X2 = np.ones(N)*X2_init
 
         self.X = np.ones(N)*X_0
         

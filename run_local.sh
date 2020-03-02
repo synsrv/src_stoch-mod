@@ -22,11 +22,11 @@ fi
 if $6
 then
    echo "doing local"
-   python -m code.model.run -c $3 $TESTFLAG
+   python -m src.model.run -c $3 $TESTFLAG
 else
    echo "doing nonlocal"
    srun -p $7 -c $4 --mem $5 --time 29-00 python \
-	-m code.model.run -c $3 $TESTFLAG
+	-m src.model.run -c $3 $TESTFLAG
 fi
 
 # # with multiprocessing. currently defunct because of a problem
@@ -36,7 +36,7 @@ fi
 # final zero sys.argv sets mode to sequential
 #cd ../
 #echo "Running analysis..."
-#mv code/run_analysis_fb.sh .
+#mv src/run_analysis_fb.sh .
 #./run_analysis_fb.sh
 
 
@@ -49,7 +49,7 @@ then
     # 6 run python script to analyze expected
     # outputs if in automated testmode!
 
-    python "./code/"$9"tests.py" 2> test.log
+    python "./src/"$9"tests.py" 2> test.log
 
     ret=$?
     if [ $ret -ne 0 ]; then
@@ -67,7 +67,7 @@ then
 else
 
 
-    cp code/run_analysis.sh .
+    cp src/run_analysis.sh .
 
     echo "Done."
 

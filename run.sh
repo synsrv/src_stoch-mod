@@ -54,10 +54,10 @@ mkdir -p ../running/$TIMESTAMP
 
 #rsync -a --exclude='*~' --exclude='.git' \
 rsync -a --exclude='*~' --exclude='analysis/' \
-      $CODEDIR/ ../running/$TIMESTAMP/code/
+      $CODEDIR/ ../running/$TIMESTAMP/src/
 
 rsync -a --delete --exclude='*~' --exclude='__pycache__' \
-      $CODEDIR/../analysis-dev/ ../running/$TIMESTAMP/code/analysis
+      $CODEDIR/../analysis-dev/ ../running/$TIMESTAMP/src/analysis
 
 cd ../running/$TIMESTAMP
 
@@ -72,12 +72,12 @@ fi
 if $DEBUG
 then
    echo "debug mode" 
-   ./code/run_local.sh $TIMESTAMP $CODEDIR $NPARSIM \
+   ./src/run_local.sh $TIMESTAMP $CODEDIR $NPARSIM \
                           $NCORES $MEMGB $LOCAL_COMPUTE \
                           $CLUSTER $TESTRUN $TESTDIR_FULL
 else
     echo "normal mode"
-    nohup ./code/run_local.sh $TIMESTAMP $CODEDIR $NPARSIM \
+    nohup ./src/run_local.sh $TIMESTAMP $CODEDIR $NPARSIM \
                           $NCORES $MEMGB $LOCAL_COMPUTE \
                           $CLUSTER $TESTRUN $TESTDIR_FULL &
 fi

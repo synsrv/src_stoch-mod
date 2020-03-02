@@ -26,7 +26,7 @@ print("Using {:d} cores".format(ncores))
 
 
 # check the state of the git repository
-repo = git.Repo('./code/')
+repo = git.Repo('./src/')
 
 if not args.testrun:
     # check for changes, while ignoring submodules

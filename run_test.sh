@@ -24,10 +24,10 @@ mkdir -p ../tests/testing/$WDIR
 
 #rsync -a --exclude='*~' --exclude='.git' \
 rsync -a --exclude='*~' --exclude='analysis/' \
-      $CODEDIR/ ../tests/testing/$WDIR/code/
+      $CODEDIR/ ../tests/testing/$WDIR/src/
 
 rsync -a --delete --exclude='*~' --exclude='__pycache__' \
-      $CODEDIR/../analysis-dev/ ../tests/testing/$WDIR/code/analysis
+      $CODEDIR/../analysis-dev/ ../tests/testing/$WDIR/src/analysis
 
 
 
@@ -37,7 +37,7 @@ cd ../tests/testing/$WDIR
 
 # 3 read out simulation set up (cores, memory etc...)
 
-source "./code/"$TESTDIR_FULL"simulation.config"
+source "./src/"$TESTDIR_FULL"simulation.config"
 
 # echo $NPARSIM
 # echo $NCORES
@@ -46,14 +46,14 @@ source "./code/"$TESTDIR_FULL"simulation.config"
 
 # 4 replace explored_params
 
-cp "./code/"$TESTDIR_FULL"explored_params.py" ./code/model/
+cp "./src/"$TESTDIR_FULL"explored_params.py" ./src/model/
 
 
 # 5 start simulation through run_local with settings from 3)
 
 rm -f nohup.out
 
-nohup ./code/run_local.sh $WDIR $CODEDIR $NPARSIM \
+nohup ./src/run_local.sh $WDIR $CODEDIR $NPARSIM \
                           $NCORES $MEMGB $LOCAL_COMPUTE \
                           $CLUSTER $TESTRUN $TESTDIR_FULL &
 

@@ -8,10 +8,10 @@ bn_sig = 0.05
 
 mu1 = 0.
 theta1 = 212.
-sigma1 = (0.0683)**0.5
+sigma1 = 0.0683
 mu2 = 0. 
 theta2 = 2.87
-sigma2 = (0.0292)**0.5
+sigma2 = 0.0292
 mu_global = 1.74
 
 X_0 = 0.

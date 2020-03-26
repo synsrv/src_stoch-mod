@@ -14,7 +14,7 @@ input_dict = {'bn_mu': [0.],
               'X_0': [0.1],
               'up_cap': [0.],
               'p_prune': [1.],
-              'c' : [0.],
+              'X_prune' : [0.],
               'process_type': ['Brownian'],
               'rnd_seed': [20200326, 20200326, 1]}
 

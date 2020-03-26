@@ -31,7 +31,7 @@ def add_params(tr):
     tr.f_add_parameter('prm.Npool', prm.Npool)
     tr.f_add_parameter('prm.Nsteps', prm.Nsteps)
     tr.f_add_parameter('prm.p_prune', prm.p_prune)
-    tr.f_add_parameter('prm.c', prm.c)
+    tr.f_add_parameter('prm.X_prune', prm.X_prune)
     tr.f_add_parameter('prm.pid_mode', prm.pid_mode)
 
     tr.f_add_parameter('prm.n_trace_rec', prm.n_trace_rec)
@@ -95,7 +95,7 @@ def run_model(tr):
     for j in range(0,tr.Nsteps):
 
 
-        ids = np.logical_and(K.X<=tr.c,
+        ids = np.logical_and(K.X<=tr.X_prune,
                              np.random.uniform(size=tr.Nprocess)<tr.p_prune)
 
 

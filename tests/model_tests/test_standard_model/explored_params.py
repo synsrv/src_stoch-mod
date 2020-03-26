@@ -18,7 +18,7 @@ input_dict = {'bn_mu': [0.],
               'X_0': [0.1],
               'up_cap': [10.**10],
               'p_prune': [1.],
-              'c' : [0.],
+              'X_prune' : [0.],
               'process_type': ['Brownian']}
 
 name = 'brownian_wUpLim'

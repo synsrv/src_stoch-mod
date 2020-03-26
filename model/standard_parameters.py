@@ -20,7 +20,7 @@ p_prune = 0.005
 Nprocess = 100
 Npool = 100
 Nsteps = 1000
-c = 0.005
+X_prune = 0.005
 dt = 1/60.*1/24.
 
 pid_mode = 'pool'

@@ -30,7 +30,7 @@ repo = git.Repo('./src/')
 
 if not args.testrun:
     # check for changes, while ignoring submodules
-    if repo.git.status('-s', '--ignore-submodules'):
+    if repo.git.status('-s', '--ignore-submodules', '--untracked-files=no'):
         raise pex.GitDiffError('Found not committed changes!')
 
     commit = repo.commit(None)

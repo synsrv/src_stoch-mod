@@ -26,3 +26,5 @@ dt = 1/60.*1/24.
 pid_mode = 'pool'
 
 n_trace_rec = 1
+
+rnd_seed = 1

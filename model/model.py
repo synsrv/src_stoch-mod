@@ -36,6 +36,8 @@ def add_params(tr):
 
     tr.f_add_parameter('prm.n_trace_rec', prm.n_trace_rec)
 
+    tr.f_add_parameter('prm.rnd_seed', prm.rnd_seed)
+    
         
 def run_model(tr):
     """generates
@@ -52,7 +54,7 @@ def run_model(tr):
       [6] : id for the process chosen from Npool
     """
 
-    np.random.seed(int(tr.v_idx))
+    np.random.seed(tr.rnd_seed)
     
     print("Started process with id ", str(tr.v_idx))
 
